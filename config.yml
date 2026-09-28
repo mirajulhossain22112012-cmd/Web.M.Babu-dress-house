@@ -1,0 +1,68 @@
+backend:
+  name: git-gateway
+  branch: main
+
+site_url: "/"
+display_url: "/"
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+publish_mode: simple
+locale: "en"
+
+collections:
+  - name: "products"
+    label: "Products"
+    description: "Add, edit or remove items shown on the Collections page. Changes go live in about a minute after saving."
+    files:
+      - name: "products"
+        label: "Product Catalogue"
+        file: "data/products.json"
+        fields:
+          - label: "Products"
+            name: "products"
+            widget: "list"
+            label_singular: "Product"
+            summary: "{{title}}  ·  {{category}}  ·  ₹{{price}}"
+            hint: "Tap 'Add Product' to create a new item. Drag items to reorder — the first 3 appear on the Home page under 'Fresh In Store'."
+            fields:
+              - { label: "Product Name", name: "title", widget: "string", hint: "e.g. Premium Cotton Panjabi" }
+              - label: "Category"
+                name: "category"
+                widget: "select"
+                options: ["Sari", "Panjabi", "Pant", "Jeans", "Under Pant", "Lungi", "Shirt", "T-Shirt", "Naity", "Other"]
+              - { label: "Price (₹)", name: "price", widget: "string", required: false, hint: "Numbers only, e.g. 950" }
+              - label: "Product Photo"
+                name: "image"
+                widget: "image"
+                required: false
+                choose_url: false
+                hint: "On mobile you can pick from Gallery or take a new photo. Portrait (3:4) photos look best."
+              - { label: "Description", name: "description", widget: "text", required: false }
+
+  - name: "shop"
+    label: "Shop Details"
+    description: "Address, contact info, opening hours, map and shop photos shown on the Home and Visit Us pages."
+    files:
+      - name: "shop"
+        label: "Store Information"
+        file: "data/shop.json"
+        fields:
+          - { label: "Shop Name", name: "name", widget: "string" }
+          - { label: "Tagline", name: "tagline", widget: "string", required: false }
+          - { label: "Address", name: "address", widget: "text", required: false }
+          - { label: "Phone", name: "phone", widget: "string", required: false, hint: "e.g. 9800257744" }
+          - { label: "WhatsApp Number", name: "whatsapp", widget: "string", required: false, hint: "Digits only with country code, e.g. 919800257744" }
+          - { label: "Facebook Page URL", name: "facebook", widget: "string", required: false }
+          - { label: "Opening Hours", name: "hours", widget: "text", required: false }
+          - label: "Google Maps Embed URL"
+            name: "maps_embed"
+            widget: "string"
+            required: false
+            hint: "Google Maps > Share > Embed a map > copy only the link inside src=\"...\""
+          - label: "Shop Photos"
+            name: "photos"
+            widget: "list"
+            label_singular: "Photo"
+            required: false
+            field: { label: "Photo", name: "photo", widget: "image", choose_url: false }

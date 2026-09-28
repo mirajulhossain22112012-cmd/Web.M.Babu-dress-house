@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visit Us — M. Babu Dress House</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="topbar"></div>
+<div class="nav-backdrop"></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="brand-name" data-shop-name>M. Babu Dress House</span>
+      <span class="brand-tag" data-shop-tagline>Your Trusted Destination for Fashion</span>
+    </div>
+    <button class="nav-toggle" aria-label="Menu">&#9776;</button>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="collections.html">Collections</a>
+      <a href="visit-us.html" class="active">Visit Us</a>
+      <a href="/admin/" class="nav-admin">Owner Workspace</a>
+    </nav>
+  </div>
+  <div class="stitch"></div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="kicker"><span>Find Us</span></div>
+      <h2>Visit Our Store</h2>
+      <p>See it, try it, and take it home the same day.</p>
+    </div>
+
+    <div class="visit-top reveal">
+      <div class="visit-tile">
+        <span class="label">Address</span>
+        <span class="value" id="v-address">Loading...</span>
+      </div>
+      <div class="visit-tile">
+        <span class="label">Phone / WhatsApp</span>
+        <span class="value"><a id="v-phone" href="#">—</a></span>
+      </div>
+      <div class="visit-tile">
+        <span class="label">Opening Hours</span>
+        <span class="value" id="v-hours">—</span>
+      </div>
+    </div>
+
+    <div class="visit-lower">
+      <div>
+        <div class="photo-strip" id="photo-strip"></div>
+        <p id="v-facebook-wrap" style="margin-top:20px;"><a id="v-facebook" href="#" target="_blank"></a></p>
+      </div>
+      <div class="map-frame" id="map-frame">
+        <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#8a7c6f;font-size:.9rem;">Map coming soon</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="stitch"></div>
+  <div class="footer-main">
+    <div class="footer-grid">
+      <div>
+        <div class="brand-name" data-shop-name style="font-size:1.3rem;">M. Babu Dress House</div>
+        <p style="margin-top:8px;" data-shop-tagline>Your Trusted Destination for Fashion</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="collections.html">Collections</a></li>
+          <li><a href="visit-us.html">Visit Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul class="footer-links">
+          <li><a data-shop-phone href="#">Phone number</a></li>
+          <li>Monday to Saturday</li>
+          <li>8:00 AM – 9:30 PM</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-bottom-inner">
+      <div class="foot-meta">&copy; <span id="year"></span> M. Babu Dress House. All rights reserved.</div>
+      <div class="foot-meta">Saulmari, West Bengal</div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+async function loadShopFull() {
+  try {
+    const res = await fetch('/data/shop.json', { cache: 'no-store' });
+    return await res.json();
+  } catch (e) { return {}; }
+}
+
+(async () => {
+  const shop = await loadShopFull();
+  document.getElementById('v-address').textContent = shop.address || 'Address coming soon';
+  document.getElementById('v-hours').textContent = shop.hours || '—';
+
+  const phoneEl = document.getElementById('v-phone');
+  if (shop.phone) { phoneEl.textContent = shop.phone; phoneEl.href = 'tel:' + shop.phone; }
+
+  const fbEl = document.getElementById('v-facebook');
+  if (shop.facebook) { fbEl.textContent = 'View our Facebook page'; fbEl.href = shop.facebook; }
+  else { document.getElementById('v-facebook-wrap').style.display = 'none'; }
+
+  if (shop.maps_embed) {
+    document.getElementById('map-frame').innerHTML = `<iframe src="${shop.maps_embed}" loading="lazy" allowfullscreen></iframe>`;
+  }
+
+  const strip = document.getElementById('photo-strip');
+  (shop.photos || []).forEach(src => {
+    const img = document.createElement('img');
+    img.src = src; img.alt = shop.name || 'Shop photo'; img.loading = 'lazy';
+    strip.appendChild(img);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "products": [
+    { "title": "Premium Cotton Panjabi", "category": "Panjabi", "price": "950", "image": "", "description": "" },
+    { "title": "Handloom Cotton Sari", "category": "Sari", "price": "1450", "image": "", "description": "" },
+    { "title": "Classic Check Lungi", "category": "Lungi", "price": "420", "image": "", "description": "" },
+    { "title": "Slim Fit Jeans", "category": "Jeans", "price": "1200", "image": "", "description": "" },
+    { "title": "Formal Trousers", "category": "Pant", "price": "1100", "image": "", "description": "" },
+    { "title": "Casual Shirt", "category": "Shirt", "price": "750", "image": "", "description": "" }
+  ]
+}

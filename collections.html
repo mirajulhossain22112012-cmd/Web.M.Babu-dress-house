@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collections — M. Babu Dress House</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="topbar"></div>
+<div class="nav-backdrop"></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="brand-name" data-shop-name>M. Babu Dress House</span>
+      <span class="brand-tag" data-shop-tagline>Your Trusted Destination for Fashion</span>
+    </div>
+    <button class="nav-toggle" aria-label="Menu">&#9776;</button>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="collections.html" class="active">Collections</a>
+      <a href="visit-us.html">Visit Us</a>
+      <a href="/admin/" class="nav-admin">Owner Workspace</a>
+    </nav>
+  </div>
+  <div class="stitch"></div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="kicker"><span>Catalog</span></div>
+      <h2>Our Collections</h2>
+      <p>Browse by category — new arrivals added regularly.</p>
+    </div>
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="search" id="search" class="search-box" placeholder="Search products by name...">
+    </div>
+    <div class="filter-row" id="filters"></div>
+    <div class="grid" id="grid"></div>
+    <p class="empty-note" id="empty" style="display:none;">No products in this category yet.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="stitch"></div>
+  <div class="footer-main">
+    <div class="footer-grid">
+      <div>
+        <div class="brand-name" data-shop-name style="font-size:1.3rem;">M. Babu Dress House</div>
+        <p style="margin-top:8px;" data-shop-tagline>Your Trusted Destination for Fashion</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="collections.html">Collections</a></li>
+          <li><a href="visit-us.html">Visit Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul class="footer-links">
+          <li><a data-shop-phone href="#">Phone number</a></li>
+          <li>Monday to Saturday</li>
+          <li>8:00 AM – 9:30 PM</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-bottom-inner">
+      <div class="foot-meta">&copy; <span id="year"></span> M. Babu Dress House. All rights reserved.</div>
+      <div class="foot-meta">Saulmari, West Bengal</div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+async function loadProducts() {
+  try {
+    const res = await fetch('/data/products.json', { cache: 'no-store' });
+    const data = await res.json();
+    return data.products || [];
+  } catch (e) { return []; }
+}
+
+function render(products, activeCat, searchTerm) {
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('empty');
+  let list = activeCat === 'All' ? products : products.filter(p => p.category === activeCat);
+  if (searchTerm) {
+    const q = searchTerm.trim().toLowerCase();
+    list = list.filter(p => (p.title || '').toLowerCase().includes(q));
+  }
+  grid.innerHTML = '';
+  empty.style.display = list.length ? 'none' : 'block';
+  empty.textContent = searchTerm ? 'No products match your search.' : 'No products in this category yet.';
+  list.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-img">
+        ${p.image ? `<img src="${p.image}" alt="${p.title}" loading="lazy">` : `<div class="ph">${p.title || 'Photo coming soon'}</div>`}
+      </div>
+      <div class="card-body">
+        <div class="card-cat">${p.category || ''}</div>
+        <div class="card-title">${p.title || ''}</div>
+        ${p.price ? `<span class="tag">₹ ${p.price}</span>` : ''}
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function renderFilters(products, activeCat, onPick) {
+  const cats = ['All', ...Array.from(new Set(products.map(p => p.category).filter(Boolean)))];
+  const row = document.getElementById('filters');
+  row.innerHTML = '';
+  cats.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (cat === activeCat ? ' active' : '');
+    btn.textContent = cat;
+    btn.addEventListener('click', () => onPick(cat));
+    row.appendChild(btn);
+  });
+}
+
+(async () => {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = Array(6).fill(0).map(() =>
+    `<div class="card"><div class="card-img skeleton"></div><div class="skel-line skeleton"></div><div class="skel-line short skeleton"></div></div>`
+  ).join('');
+
+  const products = await loadProducts();
+  const params = new URLSearchParams(location.search);
+  let activeCat = params.get('cat') || 'All';
+  let searchTerm = '';
+  const cats = ['All', ...Array.from(new Set(products.map(p => p.category).filter(Boolean)))];
+  if (!cats.includes(activeCat)) activeCat = 'All';
+
+  function update(cat) {
+    activeCat = cat;
+    renderFilters(products, activeCat, update);
+    render(products, activeCat, searchTerm);
+  }
+  update(activeCat);
+
+  document.getElementById('search').addEventListener('input', (e) => {
+    searchTerm = e.target.value;
+    render(products, activeCat, searchTerm);
+  });
+})();
+</script>
+</body>
+</html>
